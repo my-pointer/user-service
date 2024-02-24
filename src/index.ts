@@ -1,7 +1,8 @@
 import { Elysia } from "elysia";
+import userDb from "./db/connection";
 
 const app = new Elysia();
-const PORT = process.env.PORT;
+const PORT: any = process.env.PORT;
 
 app.group("/api/v1/user", (router) =>
 	router
@@ -12,7 +13,13 @@ app.group("/api/v1/user", (router) =>
 		})
 );
 
-app.listen(PORT);
-
-console.log(`User service's running at ${app.server?.hostname}:${app.server?.port}`);
+app.listen(PORT, async () => {
+	console.log(`User service's running at ${app.server?.hostname}:${app.server?.port}`);
+	try {
+		await userDb.authenticate();
+		console.log("Database connected successfully.");
+	} catch (error: any) {
+		console.error("Unable to connect to the database:", error.message);
+	}
+});
 
