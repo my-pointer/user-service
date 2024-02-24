@@ -1,6 +1,6 @@
 import { Elysia } from "elysia";
 import userDb from "./db/connection";
-import { createUser, getUserById } from "./services/userService";
+import { createUser, getUserById, getUserByUsername } from "./services/userService";
 import { TUser } from "./interfaces/user";
 
 const app = new Elysia();
@@ -18,6 +18,12 @@ app.group("/api/v1/user", (router) =>
 		.post("/create", async ({ body, set }) => {
 			const payload = body as TUser;
 			const response = await createUser(payload);
+			set.status = response.status;
+			return response;
+		})
+		.get("/", async ({ query, set }) => {
+			const username = query.username;
+			const response = await getUserByUsername(username ?? "");
 			set.status = response.status;
 			return response;
 		})

@@ -9,7 +9,7 @@ const createUser = async (payload: TUser) => {
 			algorithm: "bcrypt",
 			cost: 5,
 		});
-		await userModel.create({ username: payload.username.toLocaleLowerCase(), password: hashedPassword });
+		await userModel.create({ username: payload.username.toLowerCase(), password: hashedPassword });
 		return baseResponse(200, l.USER_CREATED);
 	} catch (error) {
 		return baseResponse(500, (error as Error).message);
@@ -28,5 +28,20 @@ const getUserById = async (userId: number) => {
 	}
 };
 
-export { createUser, getUserById };
+const getUserByUsername = async (username: string) => {
+	try {
+		const user = await userModel.findOne({
+			where: { username: username.toLowerCase() },
+			attributes: ["id", "username", "password"],
+		});
+		if (!user) {
+			return baseResponse(404, l.USER_NOT_FOUND);
+		}
+		return baseResponseWithData(200, l.SUCCESS, user);
+	} catch (error) {
+		return baseResponse(500, (error as Error).message);
+	}
+};
+
+export { createUser, getUserById, getUserByUsername };
 
