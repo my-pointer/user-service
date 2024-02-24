@@ -8,8 +8,10 @@ const PORT: any = process.env.PORT;
 
 app.group("/api/v1/user", (router) =>
 	router
-		.get("/", () => "Hello user service")
-		.get("/:userId", async ({ params, set }) => {
+		.get("/", () => {
+			return "Hello user service";
+		})
+		.get("/find/:userId", async ({ params, set }) => {
 			const userId = params.userId;
 			const response = await getUserById(+userId);
 			set.status = response.status;
@@ -21,13 +23,17 @@ app.group("/api/v1/user", (router) =>
 			set.status = response.status;
 			return response;
 		})
-		.get("/", async ({ query, set }) => {
+		.get("/find", async ({ query, set }) => {
 			const username = query.username;
 			const response = await getUserByUsername(username ?? "");
 			set.status = response.status;
 			return response;
 		})
 );
+
+app.onError(({ code }) => {
+	if (code === "NOT_FOUND") return "Route not found :(";
+});
 
 app.listen(PORT, async () => {
 	console.log(`User service's running at ${app.server?.hostname}:${app.server?.port}`);
