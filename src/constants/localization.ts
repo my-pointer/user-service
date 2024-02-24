@@ -1,5 +1,7 @@
 const LOCALIZE = {
-	USER_CREATED: "สร้างบัญชีผู้ใช้เรียบร้อย",
+	USER_CREATED: "User created",
+	SUCCESS: "Success",
+	USER_NOT_FOUND: "User not found",
 };
 
 export { LOCALIZE };

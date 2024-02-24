@@ -1,6 +1,6 @@
 import { Elysia } from "elysia";
 import userDb from "./db/connection";
-import { createUser } from "./services/userService";
+import { createUser, getUserById } from "./services/userService";
 import { TUser } from "./interfaces/user";
 
 const app = new Elysia();
@@ -9,9 +9,11 @@ const PORT: any = process.env.PORT;
 app.group("/api/v1/user", (router) =>
 	router
 		.get("/", () => "Hello user service")
-		.get("/:userId", ({ params }) => {
+		.get("/:userId", async ({ params, set }) => {
 			const userId = params.userId;
-			return { userId };
+			const response = await getUserById(+userId);
+			set.status = response.status;
+			return response;
 		})
 		.post("/create", async ({ body, set }) => {
 			const payload = body as TUser;

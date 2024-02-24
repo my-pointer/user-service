@@ -1,9 +1,14 @@
 import { IBaseResponse } from "../interfaces/baseResponse";
 
-const baseResponse = (statusCode: number, message: string) => {
-	const response: IBaseResponse = { status: statusCode, message: message ?? "" };
+function baseResponse(statusCode: number, message: string) {
+	const response: IBaseResponse<null> = { status: statusCode, message: message ?? "" };
 	return response;
-};
+}
 
-export default baseResponse;
+function baseResponseWithData<T>(statusCode: number, message: string, data: T) {
+	const response: IBaseResponse<T> = { status: statusCode, message: message ?? "", data: data ?? null };
+	return response;
+}
+
+export { baseResponse, baseResponseWithData };
 
