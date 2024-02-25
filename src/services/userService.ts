@@ -2,14 +2,26 @@ import { userModel } from "../db/model";
 import { TUser } from "../interfaces/user";
 import { LOCALIZE as l } from "../constants/localization";
 import { baseResponse, baseResponseWithData } from "../utils/baseResposne";
+import axios from "axios";
 
-const createUser = async (payload: TUser) => {
+const createUser = async (payload: TUser, accessToken: string) => {
 	try {
 		const hashedPassword = await Bun.password.hash(payload.password, {
 			algorithm: "bcrypt",
 			cost: 5,
 		});
-		await userModel.create({ username: payload.username.toLowerCase(), password: hashedPassword });
+		const response = await userModel.create({ username: payload.username.toLowerCase(), password: hashedPassword });
+		const userData = response.dataValues;
+
+		await axios.post(
+			process.env.CREDIT_SERVICE_ENDPOINT! + "/init",
+			{
+				customerId: userData.id,
+				cardHolderName: userData.username,
+			},
+			{ headers: { Authorization: accessToken } }
+		);
+
 		return baseResponse(200, l.USER_CREATED);
 	} catch (error) {
 		return baseResponse(500, (error as Error).message);

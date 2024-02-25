@@ -17,9 +17,10 @@ app.group("/api/v1/user", (router) =>
 			set.status = response.status;
 			return response;
 		})
-		.post("/create", async ({ body, set }) => {
+		.post("/create", async ({ body, set, headers }) => {
+			const accessToken = headers.authorization?.split(" ")[1];
 			const payload = body as TUser;
-			const response = await createUser(payload);
+			const response = await createUser(payload, accessToken!);
 			set.status = response.status;
 			return response;
 		})
